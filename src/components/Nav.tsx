@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { db } from "../firebase";
+import React from "react";
+import useCollection from "../hooks/useCollection";
 
 interface Channel {
   id: string;
@@ -7,20 +7,7 @@ interface Channel {
 }
 
 const Nav = () => {
-  const [channels, setChannels] = useState<Channel[]>([]);
-
-  useEffect(() => {
-    return db.collection("chanels").onSnapshot((snapshot) => {
-      const channels: Channel[] = [];
-      snapshot.forEach((doc) => {
-        channels.push({
-          ...(doc.data() as Channel),
-          id: doc.id,
-        });
-      });
-      setChannels(channels);
-    });
-  }, []);
+  const channels = useCollection<Channel>('chanels');
 
   return (
     <div className="Nav">
@@ -39,7 +26,9 @@ const Nav = () => {
       </div>
       <nav className="ChannelNav">
         {channels.map((channel) => (
-          <a href={`/channel/${channel.id}`}># {channel.id}</a>
+          <a key={channel.id} href={`/channel/${channel.id}`} >
+            # {channel.id}
+          </a>
         ))}
       </nav>
     </div>
