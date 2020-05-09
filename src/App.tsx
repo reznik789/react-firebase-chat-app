@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import Nav from "./components/Nav";
 import Channel from "./components/Channel";
 import Login from "./components/Login";
-import firebase from "./firebase";
+import firebase, { db } from "./firebase";
 import { User } from "./interfaces";
 
 const provider: firebase.auth.AuthProvider = new firebase.auth.GoogleAuthProvider();
@@ -24,10 +24,10 @@ const App: React.FC = () => {
   return user ? (
     <div className="App">
       <Nav user={user} />
-      <Channel />
+      <Channel user={user} />
     </div>
   ) : (
-    <Login onSignIn={onSignIn} authError={authError}/>
+    <Login onSignIn={onSignIn} authError={authError} />
   );
 };
 
@@ -35,14 +35,16 @@ function useAuth() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    return firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        const { uid, displayName, photoURL: photoUrl } = user || {};
-        setUser({
+    return firebase.auth().onAuthStateChanged((firebaseUser) => {
+      if (firebaseUser) {
+        const { uid, displayName, photoURL: photoUrl } = firebaseUser || {};
+        const user = {
           uid: uid || "",
           displayName: displayName || "",
           photoUrl: photoUrl || "",
-        });
+        };
+        setUser(user);
+        db.collection("users").doc(user.uid).set(user, { merge: true });
       } else setUser(null);
     });
   }, []);

@@ -8,20 +8,22 @@ export default <Collection = { id: string }>(
   const [collection, setCollection] = useState<Collection[]>([]);
 
   useEffect(() => {
-    const request = db.collection(path);
-    if (orderBy !== '') { 
-      request.orderBy(orderBy);
+    let request:
+      | firebase.firestore.CollectionReference
+      | firebase.firestore.Query = db.collection(path);
+    if (orderBy !== "") {
+      request = request.orderBy(orderBy);
     }
     return request.onSnapshot((snapshot) => {
-        const collection: Collection[] = [];
-        snapshot.forEach((doc) => {
-          collection.push({
-            ...((doc.data() as unknown) as Collection),
-            id: doc.id,
-          });
+      const collection: Collection[] = [];
+      snapshot.forEach((doc) => {
+        collection.push({
+          ...((doc.data() as unknown) as Collection),
+          id: doc.id,
         });
-        setCollection(collection);
       });
+      setCollection(collection);
+    });
   }, [path, orderBy]);
 
   return collection;

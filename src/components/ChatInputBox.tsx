@@ -1,7 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { db } from "../firebase";
+import firebase, { db } from "../firebase";
+import { User } from "../interfaces";
 
-const ChatInputBox: React.FC = (props) => {
+interface ChatInputBoxProps {
+  user: User
+}
+
+const ChatInputBox: React.FC<ChatInputBoxProps> = ({user}) => {
   const [message, setMessage] = useState<string>("");
 
   const onChange = useCallback((event) => {
@@ -12,16 +17,17 @@ const ChatInputBox: React.FC = (props) => {
     (event) => {
       event.preventDefault();
       db.collection("chanels").doc("general").collection("messages").add({
+        user: db.collection('users').doc(user.uid),
         text: message,
         createdAt: new Date(),
-      }).then(res => {
+      }).then((res: firebase.firestore.DocumentData) => {
         console.log(res);
         setMessage('');        
-      }).catch(err => {
+      }).catch((err: firebase.firestore.FirestoreError) => {
         console.log(err);        
       });
     },
-    [message]
+    [message, user.uid]
   );
 
   return (
