@@ -3,10 +3,11 @@ import firebase, { db } from "../firebase";
 import { User } from "../interfaces";
 
 interface ChatInputBoxProps {
-  user: User
+  user: User,
+  channelId?: string
 }
 
-const ChatInputBox: React.FC<ChatInputBoxProps> = ({user}) => {
+const ChatInputBox: React.FC<ChatInputBoxProps> = ({user, channelId}) => {
   const [message, setMessage] = useState<string>("");
 
   const onChange = useCallback((event) => {
@@ -16,7 +17,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({user}) => {
   const onSubmit = useCallback(
     (event) => {
       event.preventDefault();
-      db.collection("chanels").doc("general").collection("messages").add({
+      db.collection("chanels").doc(channelId).collection("messages").add({
         user: db.collection('users').doc(user.uid),
         text: message,
         createdAt: new Date(),
@@ -27,7 +28,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({user}) => {
         console.log(err);        
       });
     },
-    [message, user.uid]
+    [message, user.uid, channelId]
   );
 
   return (

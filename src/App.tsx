@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { Router, Redirect } from "@reach/router";
 import Nav from "./components/Nav";
 import Channel from "./components/Channel";
 import Login from "./components/Login";
@@ -24,7 +25,10 @@ const App: React.FC = () => {
   return user ? (
     <div className="App">
       <Nav user={user} />
-      <Channel user={user} />
+      <Router>
+        <Channel path="/channel/:channelId" user={user} />
+        <Redirect from="/" to="/channel/general" />
+      </Router>
     </div>
   ) : (
     <Login onSignIn={onSignIn} authError={authError} />

@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { Link } from '@reach/router';
 import useCollection from "../hooks/useCollection";
 import { User } from "../interfaces";
 import firebase from "../firebase";
@@ -34,9 +35,9 @@ const Nav: React.FC<NavProps> = ({ user }) => {
       </div>
       <nav className="ChannelNav">
         {channels.map((channel) => (
-          <a key={channel.id} href={`/channel/${channel.id}`}>
+          <Link key={channel.id} to={`/channel/${channel.id}`} >
             # {channel.id}
-          </a>
+          </Link>
         ))}
       </nav>
     </div>

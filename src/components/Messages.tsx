@@ -1,12 +1,16 @@
 import React from "react";
 import useCollection from "../hooks/useCollection";
 import { Message } from "../interfaces";
-import useDocument from "../hooks/useDocument";
+import useDocument from "../hooks/useDocumentWithCache";
 import { User } from "../interfaces";
 
-const Messages: React.FC = () => {
+interface MessagesProps {
+  channelId?: string
+}
+
+const Messages: React.FC<MessagesProps> = ({channelId}) => {
   const messages = useCollection<Message>(
-    "chanels/general/messages",
+    `chanels/${channelId}/messages`,
     "createdAt"
   );
 
@@ -61,7 +65,7 @@ const MessageWithDetails: React.FC<{ message: Message; showDay: boolean }> = ({
         />
         <div className="Author">
           <div>
-            <span className="UserName">{author?.displayName} </span>
+            <span className="UserName">{author?.displayName}</span>{" "}
             <span className="TimeStamp">3:37 PM</span>
           </div>
           <div className="MessageContent">{message.text}</div>
