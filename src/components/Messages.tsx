@@ -1,14 +1,31 @@
 import React from "react";
+import formatDate from "date-fns/format";
+import isSameDay from "date-fns/isSameDay";
 import useCollection from "../hooks/useCollection";
 import { Message } from "../interfaces";
 import useDocument from "../hooks/useDocumentWithCache";
 import { User } from "../interfaces";
 
 interface MessagesProps {
-  channelId?: string
+  channelId?: string;
 }
 
-const Messages: React.FC<MessagesProps> = ({channelId}) => {
+function shouldShowAvatar(prev: Message | undefined, curr: Message): boolean {
+  return (
+    !prev ||
+    prev.user.id !== curr.user.id || //message from other user
+    curr.createdAt.seconds - prev.createdAt.seconds > 3 * 60 // took some time before messages
+  );
+}
+
+function shouldShowDay(prev: Message | undefined, curr: Message): boolean {
+  return (
+    !prev ||
+    !isSameDay(prev.createdAt.seconds * 1000, curr.createdAt.seconds * 1000)
+  );
+}
+
+const Messages: React.FC<MessagesProps> = ({ channelId }) => {
   const messages = useCollection<Message>(
     `chanels/${channelId}/messages`,
     "createdAt"
@@ -19,9 +36,8 @@ const Messages: React.FC<MessagesProps> = ({channelId}) => {
       <div className="EndOfMessages">That's every message!</div>
       {messages.map((message, i, allMes) => {
         const prevMes = allMes[i - 1];
-        const showDay = false;
-        const isDiffUser: boolean =
-          !prevMes || prevMes.user.id !== message.user.id;
+        const showDay = shouldShowDay(prevMes, message);
+        const isDiffUser: boolean = shouldShowAvatar(prevMes, message);
 
         return isDiffUser ? (
           <MessageWithDetails
@@ -52,7 +68,9 @@ const MessageWithDetails: React.FC<{ message: Message; showDay: boolean }> = ({
       {showDay && (
         <div className="Day">
           <div className="DayLine" />
-          <div className="DayText">12/6/2018</div>
+          <div className="DayText">
+            {formatDate(message.createdAt.seconds * 1000, "dd/MM/yyyy")}
+          </div>
           <div className="DayLine" />
         </div>
       )}
@@ -66,7 +84,9 @@ const MessageWithDetails: React.FC<{ message: Message; showDay: boolean }> = ({
         <div className="Author">
           <div>
             <span className="UserName">{author?.displayName}</span>{" "}
-            <span className="TimeStamp">3:37 PM</span>
+            <span className="TimeStamp">
+              {formatDate(message.createdAt.seconds * 1000, "HH:mm")}
+            </span>
           </div>
           <div className="MessageContent">{message.text}</div>
         </div>
