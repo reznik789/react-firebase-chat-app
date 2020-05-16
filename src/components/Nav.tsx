@@ -1,13 +1,8 @@
 import React, { useCallback } from "react";
 import { Link } from '@reach/router';
 import useCollection from "../hooks/useCollection";
-import { User } from "../interfaces";
+import { User, Channel } from "../interfaces";
 import firebase from "../firebase";
-
-interface Channel {
-  id: string;
-  topic: string;
-}
 
 interface NavProps {
   user: User;

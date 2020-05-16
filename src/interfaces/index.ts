@@ -1,4 +1,4 @@
-import firebase from '../firebase';
+import firebase from "../firebase";
 
 export interface User {
   uid: string;
@@ -13,5 +13,10 @@ export interface Message {
     seconds: number;
     nanoseconds: number;
   };
-  user: firebase.firestore.DocumentReference
+  user: firebase.firestore.DocumentReference;
+}
+
+export interface Channel {
+  id: string;
+  topic: string;
 }
