@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import formatDate from "date-fns/format";
 import isSameDay from "date-fns/isSameDay";
 import useCollection from "../hooks/useCollection";
 import { Message } from "../interfaces";
 import useDocument from "../hooks/useDocumentWithCache";
 import { User } from "../interfaces";
+import Scroller from "./Scroller";
 
 interface MessagesProps {
   channelId?: string;
@@ -25,26 +26,14 @@ function shouldShowDay(prev: Message | undefined, curr: Message): boolean {
   );
 }
 
-function useScrollerRef() {
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (scrollerRef.current) {
-      scrollerRef.current.scrollTop = scrollerRef.current?.scrollHeight;
-    }
-  });
-  return scrollerRef;
-}
-
 const Messages: React.FC<MessagesProps> = ({ channelId }) => {
   const messages = useCollection<Message>(
     `chanels/${channelId}/messages`,
     "createdAt"
   );
 
-  const scrollerRef = useScrollerRef();
-
   return (
-    <div ref={scrollerRef} className="Messages">
+    <Scroller className="Messages">
       <div className="EndOfMessages">That's every message!</div>
       {messages.map((message, i, allMes) => {
         const prevMes = allMes[i - 1];
@@ -65,7 +54,7 @@ const Messages: React.FC<MessagesProps> = ({ channelId }) => {
           </div>
         );
       })}
-    </div>
+    </Scroller>
   );
 };
 
