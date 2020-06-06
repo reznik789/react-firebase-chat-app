@@ -10,7 +10,6 @@ interface NavProps {
 
 const Nav: React.FC<NavProps> = ({ user }) => {
   const channels = useCollection<Channel>("chanels");
-
   const onLogOut = useCallback(() => {
     firebase.auth().signOut();
   }, []);

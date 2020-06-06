@@ -14,12 +14,12 @@ export default <Collection = { id: string }>(
     if (orderBy !== "") {
       request = request.orderBy(orderBy);
     }
-    return request.onSnapshot((snapshot) => {
+    return request.onSnapshot(snapshot => {
       const collection: Collection[] = [];
-      snapshot.forEach((doc) => {
+      snapshot.forEach(doc => {
         collection.push({
           ...((doc.data() as unknown) as Collection),
-          id: doc.id,
+          id: doc.id
         });
       });
       setCollection(collection);
