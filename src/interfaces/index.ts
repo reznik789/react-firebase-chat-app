@@ -4,6 +4,10 @@ export interface User {
   uid: string;
   displayName: string;
   photoUrl: string;
+  status?: {
+    state: string;
+    lastChanged: firebase.firestore.FieldValue;
+  };
 }
 
 export interface Message {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "@reach/router";
 import { User } from "../interfaces";
 import { db } from "../firebase";
@@ -15,28 +15,27 @@ const Members: React.FC<RouteComponentProps<{ channelId: string }>> = ({
   const [members, setMembers] = useState<User[]>([]);
 
   useEffect(() => {
-    let members: User[] = [];
     return db
       .collection("users")
       .where(`channels.${channelId}`, "==", true)
       .onSnapshot(docs => {
+        let members: User[] = [];
         docs.forEach(doc => {
-          members.push({
-            ...((doc.data() as unknown) as User)
-          });
+          members.push(
+            (doc.data() as unknown) as User
+          );
         });
+        members.sort(sortByName)
         setMembers(members);
       });
   }, [channelId]);
 
-  const sortedMembers = useMemo(() => members.sort(sortByName), [members]);
-
   return (
     <div className="Members">
       <div>
-        {sortedMembers.map(member => (
+        {members.map(member => (
           <div key={member.uid} className="Member">
-            <div className="MemberStatus online" />
+            <div className={`MemberStatus ${member.status?.state || 'offline'}`} />
             {member.displayName}
           </div>
         ))}

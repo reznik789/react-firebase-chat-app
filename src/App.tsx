@@ -3,7 +3,7 @@ import { Router, Redirect } from "@reach/router";
 import Nav from "./components/Nav";
 import Channel from "./components/Channel";
 import Login from "./components/Login";
-import firebase, { db } from "./firebase";
+import firebase, { db, setupPresence } from "./firebase";
 import { User } from "./interfaces";
 
 const provider: firebase.auth.AuthProvider = new firebase.auth.GoogleAuthProvider();
@@ -27,7 +27,7 @@ const App: React.FC = () => {
       <Nav user={user} />
       <Router>
         <Channel path="/channel/:channelId" user={user} />
-        <Redirect from="/" to="/channel/general" />
+        <Redirect noThrow from="/" to="/channel/general" />
       </Router>
     </div>
   ) : (
@@ -49,6 +49,7 @@ function useAuth() {
         };
         setUser(user);
         db.collection("users").doc(user.uid).set(user, { merge: true });
+        setupPresence(user);
       } else setUser(null);
     });
   }, []);
